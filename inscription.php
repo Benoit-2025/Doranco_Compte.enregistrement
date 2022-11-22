@@ -22,16 +22,22 @@ if(!empty($_POST)){
 
 //$_POST['username'] = htmlspecialchars($_POST['pseudo']);
 
+//htmlspécialchars permet  de transformer les chevrons (<>) et les guillemets (simple ou double en leur entires html.)
+// cette étape est obligatoire lorsque vous récupérer des données de l'utilisateur.
+
 foreach($_POST as $Key => $value){
     $_POST['Key'] = htmlspecialchars($value, ENT_QUOTES);
 
 
 }
+//fin de sécurisation des données
+
 
 
     // ETAPE de vérification des données
        
         if(empty($_POST['username'])){
+            $requete = $bdd->prepare("INSERT INTO membre VALUES NULL, username, :password, lastname, : firstname, ;email, :STATUS");
             $errorMessage = "Merci d'indiquer un pseudo <br>";
         
         }
@@ -79,13 +85,43 @@ foreach($_POST as $Key => $value){
 
             if ($success) {
                 $successMessage = "Inscription réussie";
+
+
+                
+                $_SESSION["successMessage"] = "Inscription réussie";
                 //si ma requete a fonctionner je suis redirigé vers la page de ma connxion
 
-                header("location:connexion.php");
-                exit;
+                /* Intruction à la Session
 
+                la session est un fichier  temporaire apprlé sess_(id) qui est stocké sur le serveur . ce fichier a un identifiant unique . chaque ficher de session sera lié à u seul internate.
+                
+                 on déclare la session avec session_start () session_start () crée la session ou  récupèration en formation de l'id passé dans le cookie (PHPSESSID)
+
+
+                 LE FICHIER DE SESSIION peut contenr tout type sorte d'infomation y compris des information sensible (mdp,carte bancaire , données de santé...) en effect, ce fichier n'est pas accessible par l'utilisateur.
+
+                 un fois  que session_start est lu on a accès à la super global $_session  cest dans  cette superglobal que l'on va récupèrer  les information de la session.
+
+                 c'est via celle-ci également  que l'on pourra ajouter des information à la session.
+
+                 pour ajouter une information, on appel $_session suis d'un indice ici 'successMessage')  et de sa valeur.
+
+                  si l'ince appelé exit deja sa valeur sera remplacée , s'il existe pas l'indice sera créé class="
+                  les information présentent dans la session ne sont pas supprimée automatiquement . pour supprimer une information on doit utiliser la fonction 'UNSET()'7'
+                */
+
+                header("location:connexion.php");
+                exit;// APR2S LE HEADER LA FONCTION () onnplace tres régulierement une exécution exit;
+
+                /*
+                 le temps que le header soit executeée et que la redirection soit faite ,  il peut se passer un peu de temps . pendant ce temps la le code est lu et exécuter  
+                 pour eviter  que ce code soit exécuter j'ai besoin de l'éxécution 'exit' <div class="c'est tres important car pendant ce lapse de temps tres court du code peut etre injecteé par un individu mavaillant.
+
+                
+                */
             } else {
                 $errorMessage = "Erreur lors de l'inscription";
+
             }
 
         }
@@ -94,9 +130,15 @@ foreach($_POST as $Key => $value){
 
 
 
-
 require_once "inc/header.php";
-?>enter mx-auto">
+?>
+
+
+          <h1>Connexion</h1>
+
+
+<?php if( !empty($errorMessage) ){ ?>
+<div class="alert alert-Danger col-md-6 text-center mx-auto">
         <?php echo $successMessage ?>
 
     </div>
